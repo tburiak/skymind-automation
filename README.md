@@ -49,7 +49,7 @@
 1. Open the User Management section.
 2. Select an existing user.
 3. Click on the "Edit" or "Update" button.
-4. Add or remove access roles (excluding Temperature Check and Shipment Management simultaneously).
+4. Add or remove access roles.
 5. Click the "Save" button.
 6. Verify that the roles are updated successfully.
 
