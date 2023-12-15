@@ -1,4 +1,4 @@
-package ui.user.update.data;
+package ui.data;
 
 import skymind.automation.dto.UserDto;
 import skymind.automation.resolver.TestDataResolver;

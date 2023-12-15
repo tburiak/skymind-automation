@@ -1,4 +1,4 @@
-package skymind.automation.pom.xpaths;
+package skymind.automation.pom.constants.xpaths;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

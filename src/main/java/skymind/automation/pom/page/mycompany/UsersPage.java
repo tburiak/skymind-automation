@@ -1,72 +1,55 @@
-package skymind.automation.pom.page;
+package skymind.automation.pom.page.mycompany;
 
 import com.microsoft.playwright.Locator;
 import io.qameta.allure.Step;
-import skymind.automation.util.Randomizer;
+import skymind.automation.factory.BasePageFactory;
+import skymind.automation.dto.UserDto;
+import skymind.automation.pom.page.BasePage;
+
+import static com.microsoft.playwright.options.WaitForSelectorState.VISIBLE;
 
 public class UsersPage extends BasePage {
 
     private Locator buttonAddUser;
-    private Locator inputUserFirstName;
-    private Locator inputUserLastName;
-    private Locator inputUserEmail;
-    private Locator buttonCreate;
+    private Locator tableUsers;
 
     @Override
     public void initElements() {
-        buttonAddUser = page.locator("Add User");
-        inputUserFirstName = page.locator("//*[.='First Name']//input");
-        inputUserLastName = page.locator("//*[.='Last Name']//input");
-        inputUserEmail = page.locator("//*[.='E-Mail Address']//input");
-        buttonCreate = page.locator("//button[.='CREATE']");
+        buttonAddUser = page.locator("//*[text()='Add User']");
+        tableUsers = page.locator("//div[@id='content']//table[@role='table']");
     }
 
-    @Step("Type user first name into 'First Name' field")
-    public UsersPage typeFirstName(String firstName) {
-        inputUserFirstName.fill(firstName);
+    /*
+    action methods
+    */
+
+    @Step("Click on 'Add User' button")
+    public AddUserPage clickButtonAddUser() {
+        buttonAddUser.click();
+        return BasePageFactory.createInstance(page, AddUserPage.class);
+    }
+
+    @Step("Click on user row")
+    public UserDetailsPage clickUserRow(UserDto user) {
+        String rowSelector = "tbody > tr";
+        tableUsers.locator(rowSelector)
+                .filter(new Locator.FilterOptions().setHasText(user.getUserAsString()))
+                .click();
+        return BasePageFactory.createInstance(page, UserDetailsPage.class);
+    }
+
+    /*
+    validation methods
+    */
+
+    @Step("Verify new user exists")
+    public UsersPage verifyUserExists(UserDto expectedUser) {
+        String userAsString = expectedUser.getUserAsString();
+        String rowSelector = "tbody > tr";
+        tableUsers.locator(rowSelector)
+                .filter(new Locator.FilterOptions().setHasText(userAsString))
+                .waitFor(new Locator.WaitForOptions().setState(VISIBLE));
         return this;
     }
-
-    @Step("Type user first name into 'First Name' field")
-    public UsersPage typeFirstName() {
-        String randomFirstName = Randomizer.generateRandomString("TestFirstName");
-        typeFirstName(randomFirstName);
-        return this;
-    }
-
-    @Step("Type user last name into 'Last Name' field")
-    public UsersPage typeLastName(String lastName) {
-        inputUserLastName.fill(lastName);
-        return this;
-    }
-
-    @Step("Type user last name into 'Last Name' field")
-    public UsersPage typeLastName() {
-        String randomLastName = Randomizer.generateRandomString("TestLastName");
-        typeLastName(randomLastName);
-        return this;
-    }
-
-    @Step("Type user email into 'E-Mail Address' field")
-    public UsersPage typeEmailAddress(String email) {
-        inputUserEmail.fill(email);
-        return this;
-    }
-
-    @Step("Type user email into 'E-Mail Address' field")
-    public UsersPage typeEmailAddress() {
-        String randomEmail = Randomizer.generateRandomString("testEmail");
-        typeEmailAddress(randomEmail);
-        return this;
-    }
-
-    @Step("Click on button 'Create' user")
-    public UsersPage clickButtonCreate() {
-        buttonCreate.click();
-        return this;
-    }
-
-
-
 
 }

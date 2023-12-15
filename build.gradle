@@ -1,19 +1,72 @@
 plugins {
     id 'java'
+    id 'io.qameta.allure' version '2.11.2'
 }
 
-group = 'org.example'
+group = 'skymind.automation'
 version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
+ext {
+    junitVersion = '5.9.1'
+    junitPlatformSuiteVersion = '1.9.2'
+    lombokVersion = '1.18.24'
+    ownerVersion = '1.0.12'
+    playwrightVersion = '1.40.0'
+    allureVersion = '2.24.0'
+    commonsLang3Version = '3.14.0'
+    allureEnvironmentWriterVersion = '1.0.0'
+    slf4jVersion = '2.0.9'
+    commonsIOVersion = '2.11.0'
+    logbackVersion = '1.4.14'
+}
+
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation platform("org.junit:junit-bom:${junitVersion}")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    implementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    implementation "org.junit.jupiter:junit-jupiter-params"
+    testImplementation"org.junit.platform:junit-platform-suite:${junitPlatformSuiteVersion}"
+
+
+    implementation "com.microsoft.playwright:playwright:${playwrightVersion}"
+    implementation "io.qameta.allure:allure-junit-platform:${allureVersion}"
+    implementation "com.github.automatedowl:allure-environment-writer:${allureEnvironmentWriterVersion}"
+
+
+    implementation "org.aeonbits.owner:owner:${ownerVersion}"
+    implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
+    implementation "commons-io:commons-io:${commonsIOVersion}"
+
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    implementation "org.slf4j:slf4j-simple:${slf4jVersion}"
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+
+
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        includeTags "END_TO_END_TEST"
+    }
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED"
+        showStandardStreams = true
+        showStackTraces = true
+        exceptionFormat = 'full'
+    }
+    ignoreFailures = false
+
+    finalizedBy(allureReport)
+}
+
+tasks.register('playwright', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.microsoft.playwright.CLI'
 }

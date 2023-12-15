@@ -1,20 +1,16 @@
-package io.github.tahanima.factory;
-
-import static io.github.tahanima.config.ConfigurationManager.config;
+package skymind.automation.factory;
 
 import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.BrowserType.LaunchOptions;
 import com.microsoft.playwright.Playwright;
 
-/**
- * @author tahanima
- */
+import static skymind.automation.config.TestConfigurationProvider.getConfig;
+
 public enum BrowserFactory {
     CHROMIUM {
         @Override
         public Browser createInstance(final Playwright playwright) {
-            return playwright.chromium().launch(options());
+            return playwright.chromium().launch(options().setChannel("chrome"));
         }
     },
     FIREFOX {
@@ -31,9 +27,9 @@ public enum BrowserFactory {
     };
 
     public LaunchOptions options() {
-        return new BrowserType.LaunchOptions()
-                .setHeadless(config().headless())
-                .setSlowMo(config().slowMotion());
+        return new LaunchOptions()
+                .setHeadless(getConfig().headless())
+                .setSlowMo(getConfig().slowMotion());
     }
 
     public abstract Browser createInstance(final Playwright playwright);

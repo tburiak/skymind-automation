@@ -1,31 +1,25 @@
-package io.github.tahanima.factory;
+package skymind.automation.factory;
 
 import com.microsoft.playwright.Page;
-
-import io.github.tahanima.ui.page.BasePage;
-
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import skymind.automation.pom.page.BasePage;
 
-/**
- * @author tahanima
- */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BasePageFactory {
-
-    private BasePageFactory() {}
 
     public static <T extends BasePage> T createInstance(final Page page, final Class<T> clazz) {
         try {
             BasePage instance = clazz.getDeclaredConstructor().newInstance();
-
-            instance.setAndConfigurePage(page);
-            instance.initComponents();
-
+            instance.initPage(page);
+            instance.initElements();
             return clazz.cast(instance);
         } catch (Exception e) {
             log.error("BasePageFactory::createInstance", e);
         }
 
-        throw new NullPointerException("Page class instantiation failed.");
+        throw new IllegalArgumentException("Page class instantiation failed.");
     }
 }
